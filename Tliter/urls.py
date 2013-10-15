@@ -5,5 +5,6 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', include('twitter.urls')),
+    url(r'^$', 'twitter.views.index'),
+    url(r'tweets/', include('twitter.urls'))
 )
