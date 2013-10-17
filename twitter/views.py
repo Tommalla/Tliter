@@ -1,11 +1,12 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
+from django.contrib.auth import authenticate, logout, login
 
 from twitter.models import Tweet
 
 def display_tweets(request, tweets, can_add):
-	context = {'tweets': tweets, 'logged' : can_add}
+	context = {'tweets': tweets, 'logged' : request.user.is_authenticated()}
 	return render(request, 'twitter/show_tweets.html', context)
 
 def index(request):
@@ -23,14 +24,25 @@ def show_tweet(request, tweet_id):
 	return out
 
 def add(request):
-	t = Tweet(message=request.POST['message'], pub_date=timezone.now())
+	t = Tweet(message=request.POST['message'], pub_date=timezone.now(), author=request.user)
 	t.save()
 	return HttpResponseRedirect('/tweets')
 
-def login(request):
-	#TODO
+def login_view(request):
+	username = request.POST['login']
+	password = request.POST['password']
+	user = authenticate(username=username, password=password)
+	if user is not None:
+		if user.is_active:
+			login(request, user)
+	else:
+		return HttpResponse("User nonexistent");
 	return HttpResponseRedirect('/')
 
-def logout(request):
-	#TODO
+def logout_view(request):
+	logout(request)
 	return HttpResponseRedirect('/')
+
+def register_view(request):
+	#TODO
+	return HttpResponse('TODO');
