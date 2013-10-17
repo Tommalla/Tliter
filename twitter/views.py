@@ -3,10 +3,11 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.contrib.auth import authenticate, logout, login
 
+from django.contrib.auth.models import User
 from twitter.models import Tweet
 
 def display_tweets(request, tweets, can_add):
-	context = {'tweets': tweets, 'logged' : request.user.is_authenticated()}
+	context = {'tweets': tweets, 'can_tweet' : can_add and request.user.is_authenticated()}
 	return render(request, 'twitter/show_tweets.html', context)
 
 def index(request):
@@ -21,6 +22,16 @@ def show_tweet(request, tweet_id):
 	except Tweet.DoesNotExist:
 		out = HttpResponse("Tweet %s nonexistent" % tweet_id)
 		
+	return out
+
+def tweets_by(request, username):
+	out = None
+	try:
+		u = get_object_or_404(User, username=username)
+		tweets = Tweet.objects.filter(author=u).order_by('-pub_date')
+		out = display_tweets(request, tweets, False)
+	except Tweet.DoesNotExist:
+		out = HttpResponse("Wrong input")
 	return out
 
 def add(request):
