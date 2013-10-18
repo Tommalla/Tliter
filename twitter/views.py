@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.contrib.auth import authenticate, logout, login
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 
 from django.contrib.auth.models import User
 from twitter.models import Tweet
@@ -41,7 +43,7 @@ def add(request):
 	return HttpResponseRedirect(reverse('twitter:index'))
 
 def login_view(request):
-	username = request.POST['login']
+	username = request.POST['username']
 	password = request.POST['password']
 	user = authenticate(username=username, password=password)
 	if user is not None:
@@ -53,20 +55,33 @@ def login_view(request):
 
 def logout_view(request):
 	logout(request)
+	messages.add_message(request, messages.INFO, 'Wylogowano.')
 	return HttpResponseRedirect(reverse('twitter:index'))
+
+def show_registration(request, usernameCallback=None):
+	return render(request, 'twitter/register.html', {'can_register' : not request.user.is_authenticated(), 'username' : usernameCallback})
 
 def register_view(request):
 	if 'post' in request.POST:
-		username = request.POST['username']
-		password = request.POST['password']
+		#TODO IN!
+		username = request.POST['username'] if 'username' in request.POST else '';
+		password = request.POST['password'] if 'password' in request.POST else '';
+	
+		error = False
 	
 		if username and User.objects.filter(username=username).count():
-			#ERROR, go back to form, send data back to form
-			return HttpResponse(reverse('twitter:register'))
+			error = True
+			messages.add_message(request, messages.ERROR, 'Błąd! Użytkownik o takiej nazwie już istnieje!')
+			
+		if not password or not username:
+			error = True
+			messages.add_message(request, messages.ERROR, 'Błąd! Musisz wypełnić wszystkie pola!' )
+		
+		if error:
+			return show_registration(request, username)
 		
 		User.objects.create_user(username=username, password=password)
-		#SHOW SOME MESSAGE
-		
-		return HttpResponseRedirect(reverse('twitter:index'))
+		messages.add_message(request, messages.INFO, 'Pomyślnie utworzono użytkownika.')
+		return login_view(request)
 	else:
-		return render(request, reverse('twitter:register'),  {'can_register' : not request.user.is_authenticated()})
+		return render(request, 'twitter/register.html',  {'can_register' : not request.user.is_authenticated()})
