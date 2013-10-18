@@ -6,11 +6,11 @@
 					        <div class="span7 offset2" style="background-color: lightblue; border: solid 1px black;">
 							<div class="row-fluid" style="background-color: gray; min-height: 30px;">
 								<div class="span1">
-									<a href="{% url 'twitter:show_tweet' t.id %}">#{{ t.id }}</a>
+									<a style="color: lightgray; font-weight: bold; text-decoration: none;" href="{% url 'twitter:show_tweet' t.id %}">#{{ t.id }}</a>
 								</div>
 								<div class="span5 text-left">
 									{{ t.pub_date|date:"d M Y" }} użytkownik 
-									<a href="{% url 'twitter:tweets_by' t.author.username %}">
+									<a style="color: black; font-weight: bold; text-decoration: none;" href="{% url 'twitter:tweets_by' t.author.username %}">
 									{{ t.author.username }}</a> tłitnął:
 								</div>
 							</div>
