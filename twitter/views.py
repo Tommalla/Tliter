@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.contrib.auth import authenticate, logout, login
+from django.core.urlresolvers import reverse
 
 from django.contrib.auth.models import User
 from twitter.models import Tweet
@@ -37,7 +38,7 @@ def tweets_by(request, username):
 def add(request):
 	t = Tweet(message=request.POST['message'], pub_date=timezone.now(), author=request.user)
 	t.save()
-	return HttpResponseRedirect('/tweets')
+	return HttpResponseRedirect(reverse('twitter:index'))
 
 def login_view(request):
 	username = request.POST['login']
@@ -48,11 +49,11 @@ def login_view(request):
 			login(request, user)
 	else:
 		return HttpResponse('User nonexistent');
-	return HttpResponseRedirect('/')
+	return HttpResponseRedirect(reverse('twitter:index'))
 
 def logout_view(request):
 	logout(request)
-	return HttpResponseRedirect('/')
+	return HttpResponseRedirect(reverse('twitter:index'))
 
 def register_view(request):
 	if 'post' in request.POST:
@@ -61,11 +62,11 @@ def register_view(request):
 	
 		if username and User.objects.filter(username=username).count():
 			#ERROR, go back to form, send data back to form
-			return HttpResponse('/register')
+			return HttpResponse(reverse('twitter:register'))
 		
 		User.objects.create_user(username=username, password=password)
 		#SHOW SOME MESSAGE
 		
-		return HttpResponseRedirect('/')
+		return HttpResponseRedirect(reverse('twitter:index'))
 	else:
-		return render(request, 'twitter/register.html',  {'can_register' : not request.user.is_authenticated()})
+		return render(request, reverse('twitter:register'),  {'can_register' : not request.user.is_authenticated()})

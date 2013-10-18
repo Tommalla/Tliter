@@ -14,4 +14,4 @@ class HashTag(models.Model):
 	name = models.CharField(max_length=200,blank=False,unique=True)
 	
 	def __unicode__(self):
-		return 'hashTag' + self.name
+		return 'haszTag' + self.name
