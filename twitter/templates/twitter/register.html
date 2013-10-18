@@ -1,0 +1,14 @@
+{% extends "twitter/base.html" %}
+{% block content %}
+	{% if can_register %}
+		<form method="POST" href="{% url 'register' %}">
+			{% csrf_token %}
+			<input type="hidden" name="post" value="1"/>
+			<input type="text" name="username" value="{{ username }}"/>
+			<input type="password" name="password"/>
+			<input type="submit" class="btn" value="Rejestruj!"/>
+		</form>
+	{% else %}
+		Jesteś już zarejestrowany!
+	{% endif %}
+{% endblock %}

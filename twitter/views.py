@@ -47,7 +47,7 @@ def login_view(request):
 		if user.is_active:
 			login(request, user)
 	else:
-		return HttpResponse("User nonexistent");
+		return HttpResponse('User nonexistent');
 	return HttpResponseRedirect('/')
 
 def logout_view(request):
@@ -55,5 +55,17 @@ def logout_view(request):
 	return HttpResponseRedirect('/')
 
 def register_view(request):
-	#TODO
-	return HttpResponse('TODO');
+	if 'post' in request.POST:
+		username = request.POST['username']
+		password = request.POST['password']
+	
+		if username and User.objects.filter(username=username).count():
+			#ERROR, go back to form, send data back to form
+			return HttpResponse('/register')
+		
+		User.objects.create_user(username=username, password=password)
+		#SHOW SOME MESSAGE
+		
+		return HttpResponseRedirect('/')
+	else:
+		return render(request, 'twitter/register.html',  {'can_register' : not request.user.is_authenticated()})
