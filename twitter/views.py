@@ -43,14 +43,19 @@ def add(request):
 	return HttpResponseRedirect(reverse('twitter:index'))
 
 def login_view(request):
-	username = request.POST['username']
-	password = request.POST['password']
-	user = authenticate(username=username, password=password)
-	if user is not None:
-		if user.is_active:
-			login(request, user)
+	username = request.POST['username'] if 'username' in request.POST else '';
+	password = request.POST['password'] if 'password' in request.POST else '';
+
+	if not password or not username:
+		messages.add_message(request, messages.ERROR, 'Błąd! Musisz wypełnić wszystkie pola!' )
 	else:
-		return HttpResponse('User nonexistent');
+		user = authenticate(username=username, password=password)
+		if user is not None:
+			if user.is_active:
+				login(request, user)
+		else:
+			messages.add_message(request, messages.ERROR, 'Użyszkodnik nie istnieje!')
+	
 	return HttpResponseRedirect(reverse('twitter:index'))
 
 def logout_view(request):
@@ -71,7 +76,7 @@ def register_view(request):
 	
 		if username and User.objects.filter(username=username).count():
 			error = True
-			messages.add_message(request, messages.ERROR, 'Błąd! Użytkownik o takiej nazwie już istnieje!')
+			messages.add_message(request, messages.ERROR, 'Błąd! Użyszkodnik o takiej nazwie już istnieje!')
 			
 		if not password or not username:
 			error = True
@@ -81,7 +86,7 @@ def register_view(request):
 			return show_registration(request, username)
 		
 		User.objects.create_user(username=username, password=password)
-		messages.add_message(request, messages.INFO, 'Pomyślnie utworzono użytkownika.')
+		messages.add_message(request, messages.INFO, 'Pomyślnie utworzono użyszkodnika.')
 		return login_view(request)
 	else:
 		return render(request, 'twitter/register.html',  {'can_register' : not request.user.is_authenticated()})
