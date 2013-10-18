@@ -1,12 +1,26 @@
 {% extends "twitter/base.html" %}
 {% block content %}
 	{% if can_register %}
-		<form method="POST" href="{% url 'register' %}">
+		<form class="form-horizontal span4 offset3" style="font-align: center" method="POST" href="{% url 'register' %}">
 			{% csrf_token %}
 			<input type="hidden" name="post" value="1"/>
-			<input type="text" name="username" value="{{ username }}"/>
-			<input type="password" name="password"/>
-			<input type="submit" class="btn" value="Rejestruj!"/>
+			<div class="control-group">
+				<label class="control-label" for="username">Nazwa użyszkodnika</label>
+				<div class="controls">
+					<input type="text" name="username" value="{{ username }}"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="password">Haseło</label>
+				<div class="controls">
+					<input type="password" name="password"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<input type="submit" class="btn" value="Rejestruj!"/>
+				</div>
+			</div>
 		</form>
 	{% else %}
 		Jesteś już zarejestrowany!

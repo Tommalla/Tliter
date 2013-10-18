@@ -31,7 +31,7 @@
     </script>
   </head>
 
-  <body style='font-family:"Helvetica Neue",Helvetica,Arial,sans-serif'>
+  <body style=' background-color: lightgray;'>
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -71,7 +71,7 @@
       {% if messages %}
         {% for message in messages %}
           <div class="alert alert-{{message.tags}}">
-            <!-- <a class="close" data-dismiss="alert">×</a> -->
+            <!-- <a class="close" data-dismiss="alert">TODO someday: ×</a> -->
             {{message}}
           </div>
         {% endfor %}
